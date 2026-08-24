@@ -93,3 +93,43 @@ learnButtons.forEach(button => {
     }
   });
 });
+// Adicione este trecho no final do seu script.js
+
+function animarContadores() {
+  const contadores = document.querySelectorAll('.counter');
+
+  contadores.forEach(contador => {
+    const alvo = parseInt(contador.getAttribute('data-target'));
+    const duracao = 1500; // 1.5 segundos
+    const incremento = alvo / (duracao / 16); // ~60fps
+    let atual = 0;
+
+    const atualizar = () => {
+      atual += incremento;
+      if (atual < alvo) {
+        contador.textContent = Math.floor(atual);
+        requestAnimationFrame(atualizar);
+      } else {
+        contador.textContent = alvo;
+      }
+    };
+
+    atualizar();
+  });
+}
+
+// Só anima quando a seção de estatísticas entrar na tela (usando IntersectionObserver)
+const statsSection = document.querySelector('.stats');
+
+if (statsSection) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animarContadores();
+        observer.unobserve(entry.target); // anima só uma vez
+      }
+    });
+  }, { threshold: 0.5 });
+
+  observer.observe(statsSection);
+}
